@@ -1,0 +1,31 @@
+services:
+  metadata-db:
+    image: postgres:17.5
+    container_name: metadata-db-postgres
+    restart: always
+    ports:
+      - "5450:5432"
+    environment:
+      POSTGRES_USER: metadata_user
+      POSTGRES_PASSWORD: metadata_password
+      POSTGRES_DB: metadata_db
+    volumes:
+      - metadata-db-data:/var/lib/postgresql/data
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: minio
+    restart: always
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web UI
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio-data:/data
+
+volumes:
+  metadata-db-data:
+  minio-data:
