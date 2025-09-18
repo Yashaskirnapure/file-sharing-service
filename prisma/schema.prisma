@@ -14,17 +14,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model File {
-  id          String   @id @default(uuid())
-  filename    String
-  storagePath String   @map("storage_path")
-  size        BigInt
-  contentType String   @map("content_type")
-  createdAt   DateTime @default(now()) @map("created_at")
 
+enum FileStatus {
+  PENDING
+  AVAILABLE
+  FAILED
+  DELETED
+}
+
+model File {
+  id           String     @id @default(uuid())
+  filename     String
+  size         BigInt?    
+  contentType  String     @map("content_type")
+  status       FileStatus @default(PENDING)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  completedAt  DateTime?  @map("completed_at")
+  deletedAt    DateTime?  @map("deleted_at")
+  
   // relation
   ownerId String
-  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@map("files")
 }
 
 model User {
