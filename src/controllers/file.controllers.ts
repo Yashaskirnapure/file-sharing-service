@@ -8,11 +8,15 @@ import { FileRequestDTO } from "../dto/file.request";
 
 export async function getAllFiles(req: Request, res: Response): Promise<void>{
     try{
-        const userId = req.body.user.userId;
+        const userId = req.user?.userId;
+        if (!userId){
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
         const files = await prisma.file.findMany({
             where: {
                 ownerId: userId,
-                status: "AVAILABLE"
+                //status: "AVAILABLE"
             }
         });
 
@@ -20,7 +24,7 @@ export async function getAllFiles(req: Request, res: Response): Promise<void>{
             return fileResponseSchema.parse({
                 id: file.id,
                 filename: file.filename,
-                size: file.size,
+                size: Number(file.size),
                 contentType: file.contentType,
                 createdAt: file.createdAt
             });
@@ -37,12 +41,30 @@ export async function getAllFiles(req: Request, res: Response): Promise<void>{
     }
 }
 
-export async function handleFileView(req: Request, res: Response){ }
+export async function handleFileView(req: Request, res: Response){
+    try{
+        const body = req.body;
+        const ownerId = req.user?.userId;
+        
+        if (!ownerId){
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+    }catch(err){
+
+    }
+}
 
 export async function handleFileUpload(req: Request, res: Response): Promise<void>{
     try{
         const body = req.body;
-        const ownerId = body.user.userId;
+        const ownerId = req.user?.userId;
+        
+        if (!ownerId){
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
         const files: FileRequestDTO[] = req.body.files;
         
         if(!files || files.length === 0){
@@ -58,7 +80,7 @@ export async function handleFileUpload(req: Request, res: Response): Promise<voi
                         filename: file.filename,
                         size: file.size,
                         contentType: file.contentType,
-                        ownerId: ownerId,
+                        ownerId: ownerId!,
                     },
                 })
             )

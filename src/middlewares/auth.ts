@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 
+interface JwtUserPayload {
+    userId: string;
+    name: string;
+    email: string;
+}
+
 export function authMiddleware(req: Request, res: Response, next: Function): void{
     try{
         const authHeader = req.headers.authorization;
@@ -10,11 +16,12 @@ export function authMiddleware(req: Request, res: Response, next: Function): voi
             return;
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-        req.body.user = decoded;
-
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtUserPayload;
+        req.user = decoded;
+        console.log(decoded)
         next();
     }catch(err: any){
+        console.log(err);
         res.status(403).json({ message: "Invalid or expired token" });
     }
 }
