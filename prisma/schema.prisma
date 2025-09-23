@@ -19,6 +19,7 @@ enum FileStatus {
   PENDING
   AVAILABLE
   FAILED
+  DELETING
   DELETED
 }
 
