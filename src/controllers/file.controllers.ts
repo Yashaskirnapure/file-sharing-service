@@ -17,7 +17,7 @@ export async function getAllFiles(req: Request, res: Response): Promise<void> {
         }
 
         const files: File[] = await prisma.file.findMany({
-            where: { ownerId: userId, status: FileStatus.AVAILABLE },
+            where: { ownerId: userId, status: "AVAILABLE" },
         });
 
         const filteredFiles: FileResponseDTO[] = files.map((file) =>
