@@ -33,9 +33,9 @@ model File {
   completedAt  DateTime?  @map("completed_at")
   deletedAt    DateTime?  @map("deleted_at")
   
-  // relation
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  shareLinks ShareLink[]
 
   @@map("files")
 }
@@ -47,6 +47,20 @@ model User {
   password String
   joinedAt DateTime @default(now()) @map("joined_at")
 
-  // relation
   files File[]
+  shareLinks ShareLink[]
+}
+
+model ShareLink {
+  id         String   @id @default(uuid())
+  fileId     String
+  createdAt  DateTime @default(now())
+  expiryAt   DateTime
+  createdBy  String
+  duration   String
+
+  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  owner  User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@map("share_links")
 }
