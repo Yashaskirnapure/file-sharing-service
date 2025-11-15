@@ -6,6 +6,7 @@ import fileRouter from './routers/file.router';
 import authRouter from './routers/auth.router';
 import minioRouter from './routers/minio.router';
 import cors from "cors";
+import shareRouter from './routers/share.router';
 
 dotenv.config();
 const app: Application = express();
@@ -17,5 +18,6 @@ app.use(express.json());
 app.use('/api/webhooks/minio', minioRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/file', fileRouter);
+app.use('/api/share', shareRouter);
 
 app.listen(5000, () => { console.log("Server running on 5000") })
